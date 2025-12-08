@@ -1,0 +1,45 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "ADFSIMAPRACTICE"
+		},
+		"AzureBlobStorage1_connectionString": {
+			"value": ""
+		},
+		"AzureSqlDatabase_password": {
+			"value": ""
+		},
+		"linkedservice1storagesima_connectionString": {
+			"value": ""
+		},
+		"linkedserviceforSQLserver_password": {
+			"value": ""
+		},
+		"AzureSqlDatabase_properties_typeProperties_server": {
+			"value": "simasqldemo.database.windows.net"
+		},
+		"AzureSqlDatabase_properties_typeProperties_database": {
+			"value": "Azure SQL"
+		},
+		"AzureSqlDatabase_properties_typeProperties_userName": {
+			"value": "sima"
+		},
+		"linkedserviceforSQLserver_properties_typeProperties_server": {
+			"value": "simasqldemo.database.windows.net"
+		},
+		"linkedserviceforSQLserver_properties_typeProperties_database": {
+			"value": "simatestdbsql"
+		},
+		"linkedserviceforSQLserver_properties_typeProperties_userName": {
+			"value": "sima"
+		},
+		"containerUri": {
+			"value": ""
+		},
+		"containerSasToken": {
+			"value": ""
+		}
+	}
+}
