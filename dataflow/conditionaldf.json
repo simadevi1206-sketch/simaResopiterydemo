@@ -1,0 +1,108 @@
+{
+	"name": "conditionaldf",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "inputDatasetForAggregation",
+						"type": "DatasetReference"
+					},
+					"name": "Conditionalsplit"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "HRsinkCondionalSplit",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "ITsinkCondionalSplit",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "PayrollsinkCondionalSplit",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "OthersinkCondionalSplit",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "splitCondition"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as date,",
+				"          employeeID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> Conditionalsplit",
+				"Conditionalsplit split(equals(DepartmentID,'1'),",
+				"     equals(DepartmentID,'2'),",
+				"     equals(DepartmentID,'3'),",
+				"     disjoint: false,",
+				"     partitionBy('hash', 1)) ~> splitCondition@(HRemployees, ITemployees, Payrollemployees, otheremployee)",
+				"splitCondition@HRemployees sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ConditionalHR.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> HRsinkCondionalSplit",
+				"splitCondition@ITemployees sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ITCondionalSplit.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> ITsinkCondionalSplit",
+				"splitCondition@Payrollemployees sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['PayrollsinkCondionalSplit.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> PayrollsinkCondionalSplit",
+				"splitCondition@otheremployee sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['OthersinkCondionalSplit'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> OthersinkCondionalSplit"
+			]
+		}
+	}
+}

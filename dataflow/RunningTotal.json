@@ -1,0 +1,58 @@
+{
+	"name": "RunningTotal",
+	"properties": {
+		"folder": {
+			"name": "Real Time Scenario Data"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Runningtotal",
+						"type": "DatasetReference"
+					},
+					"name": "employeerunning"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "sink",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "window"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          EmployeeID as short,",
+				"          EmployeeName as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as date,",
+				"          Salary as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employeerunning",
+				"employeerunning window(asc(Salary, true),",
+				"     {Running Total} = sum(toInteger(Salary)),",
+				"     partitionBy('hash', 1)) ~> window",
+				"window sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink"
+			]
+		}
+	}
+}

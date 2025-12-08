@@ -1,0 +1,87 @@
+{
+	"name": "Union",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "UnionHR",
+						"type": "DatasetReference"
+					},
+					"name": "HR"
+				},
+				{
+					"dataset": {
+						"referenceName": "UnionIT",
+						"type": "DatasetReference"
+					},
+					"name": "IT"
+				},
+				{
+					"dataset": {
+						"referenceName": "UnionPayRoll",
+						"type": "DatasetReference"
+					},
+					"name": "PayRoll"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "sink",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "union"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as date,",
+				"          employeeID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> HR",
+				"source(output(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as date,",
+				"          employeeID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> IT",
+				"source(output(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as date,",
+				"          employeeID as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> PayRoll",
+				"HR, IT, PayRoll union(byName: true,",
+				"     partitionBy('hash', 1))~> union",
+				"union sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['Union.Dataflow.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink"
+			]
+		}
+	}
+}

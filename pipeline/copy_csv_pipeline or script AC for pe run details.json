@@ -1,0 +1,159 @@
+{
+	"name": "copy_csv_pipeline or script AC for pe run details",
+	"properties": {
+		"activities": [
+			{
+				"name": "Script",
+				"type": "Script",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"linkedServiceName": {
+					"referenceName": "linkedserviceforSQLserver",
+					"type": "LinkedServiceReference"
+				},
+				"typeProperties": {
+					"scripts": [
+						{
+							"type": "NonQuery",
+							"text": {
+								"value": "INSERT INTO [dbo].[tbl_azurepiplineexecutiondetails]\nVALUES (\n    '@{pipeline().RunId}',\n    '@{pipeline().DataFactory}',\n    '@{pipeline().Pipeline}',\n    '@{pipeline().TriggerName}',\n    '@{pipeline().TriggerId}'\n);",
+								"type": "Expression"
+							}
+						}
+					],
+					"scriptBlockExecutionTimeout": "02:00:00"
+				}
+			},
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['EmployeeID']"
+								},
+								"sink": {
+									"name": "EmployeeID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['EmployeeName']"
+								},
+								"sink": {
+									"name": "EmployeeName"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Department']"
+								},
+								"sink": {
+									"name": "Department"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Salary']"
+								},
+								"sink": {
+									"name": "Salary"
+								}
+							},
+							{
+								"source": {
+									"path": "$['DateOfJoining']"
+								},
+								"sink": {
+									"name": "DateOfJoining"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "source",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "sink_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": {
+								"value": "@pipeline().parameters.SIMAD",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.JSON",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			}
+		],
+		"parameters": {
+			"SIMAD": {
+				"type": "string"
+			},
+			"JSON": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-11-23T16:44:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

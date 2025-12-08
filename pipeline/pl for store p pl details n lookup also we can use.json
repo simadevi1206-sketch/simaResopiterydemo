@@ -1,0 +1,172 @@
+{
+	"name": "pl for store p pl details n lookup also we can use",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "JsonSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "JsonReadSettings"
+						}
+					},
+					"sink": {
+						"type": "DelimitedTextSink",
+						"storeSettings": {
+							"type": "AzureBlobStorageWriteSettings"
+						},
+						"formatSettings": {
+							"type": "DelimitedTextWriteSettings",
+							"quoteAllText": true,
+							"fileExtension": ".txt"
+						}
+					},
+					"enableStaging": false,
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['EmployeeID']"
+								},
+								"sink": {
+									"name": "EmployeeID"
+								}
+							},
+							{
+								"source": {
+									"path": "$['EmployeeName']"
+								},
+								"sink": {
+									"name": "EmployeeName"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Department']"
+								},
+								"sink": {
+									"name": "Department"
+								}
+							},
+							{
+								"source": {
+									"path": "$['Salary']"
+								},
+								"sink": {
+									"name": "Salary"
+								}
+							},
+							{
+								"source": {
+									"path": "$['DateOfJoining']"
+								},
+								"sink": {
+									"name": "DateOfJoining"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "source",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "sink_csv",
+						"type": "DatasetReference",
+						"parameters": {
+							"folder": {
+								"value": "@pipeline().parameters.foldername",
+								"type": "Expression"
+							},
+							"filename": {
+								"value": "@pipeline().parameters.filename",
+								"type": "Expression"
+							}
+						}
+					}
+				]
+			},
+			{
+				"name": "Stored procedure for pl details",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "Copy data",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[sp_logpipelineExecutionDetails]",
+					"storedProcedureParameters": {
+						"DataFacroryName": {
+							"value": "",
+							"type": "String"
+						},
+						"PipelineName": {
+							"value": "",
+							"type": "String"
+						},
+						"PipelineRunId": {
+							"value": "",
+							"type": "String"
+						},
+						"PipelineTriggerId": {
+							"value": "",
+							"type": "String"
+						},
+						"PipelineTriggerName": {
+							"value": "",
+							"type": "String"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "linkedserviceforSQLserver",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"parameters": {
+			"foldername": {
+				"type": "string"
+			},
+			"filename": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-11-23T16:44:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

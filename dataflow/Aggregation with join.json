@@ -1,0 +1,38 @@
+{
+	"name": "Aggregation with join",
+	"properties": {
+		"type": "Flowlet",
+		"typeProperties": {
+			"sources": [],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "aggregate"
+				},
+				{
+					"name": "employee"
+				},
+				{
+					"name": "sink"
+				}
+			],
+			"scriptLines": [
+				"input(output(",
+				"          Name as string,",
+				"          DepartmentID as short,",
+				"          Department as string,",
+				"          DateOfJoining as date",
+				"     ),",
+				"     order: 0,",
+				"     allowSchemaDrift: true) ~> employee",
+				"employee aggregate(groupBy(DepartmentID),",
+				"     TotalNumbersOfDepartment = count(DepartmentID),",
+				"     partitionBy('hash', 1)) ~> aggregate",
+				"aggregate output(mapColumn(",
+				"          DepartmentID,",
+				"          TotalNumbersOfDepartment",
+				"     )) ~> sink"
+			]
+		}
+	}
+}

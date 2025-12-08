@@ -1,0 +1,99 @@
+{
+	"name": "Error Handling Dataflow",
+	"properties": {
+		"folder": {
+			"name": "Real Time Scenario Data"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "inputDatasetForAggregation",
+						"type": "DatasetReference"
+					},
+					"name": "employee"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "inputDatasetForAggregation",
+						"type": "DatasetReference"
+					},
+					"name": "sink",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				},
+				{
+					"dataset": {
+						"referenceName": "inputDatasetForAggregation",
+						"type": "DatasetReference"
+					},
+					"name": "sink2",
+					"rejectedDataLinkedService": {
+						"referenceName": "AzureBlobStorage1",
+						"type": "LinkedServiceReference"
+					}
+				}
+			],
+			"transformations": [
+				{
+					"name": "conditionalsplit1"
+				},
+				{
+					"name": "derivedColumnforErrorRows"
+				},
+				{
+					"name": "derivedforGoodRows"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as string,",
+				"          employeeID as string,",
+				"          Salary as string,",
+				"          DepartmentName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> employee",
+				"employee split(isNull(toDate(DateOfJoining)),",
+				"     disjoint: false,",
+				"     partitionBy('hash', 1)) ~> conditionalsplit1@(errorRows, GoodRows)",
+				"conditionalsplit1@errorRows derive(FileName = \"employee_data.txt\") ~> derivedColumnforErrorRows",
+				"conditionalsplit1@GoodRows derive(fileName = \"employee_data.txt\",",
+				"     partitionBy('hash', 1)) ~> derivedforGoodRows",
+				"derivedColumnforErrorRows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as string,",
+				"          employeeID as string,",
+				"          Salary as string,",
+				"          DepartmentName as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> sink",
+				"derivedforGoodRows sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Name as string,",
+				"          DepartmentID as string,",
+				"          DateOfJoining as string,",
+				"          employeeID as string,",
+				"          Salary as string,",
+				"          DepartmentName as string",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     partitionBy('hash', 1)) ~> sink2"
+			]
+		}
+	}
+}

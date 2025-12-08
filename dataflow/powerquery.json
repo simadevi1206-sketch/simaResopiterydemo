@@ -1,0 +1,20 @@
+{
+	"name": "powerquery",
+	"properties": {
+		"type": "WranglingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"name": "inputDatasetForAggregation",
+					"script": "source(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tignoreNoFilesFound: false) ~> inputDatasetForAggregation",
+					"dataset": {
+						"referenceName": "inputDatasetForAggregation",
+						"type": "DatasetReference"
+					}
+				}
+			],
+			"script": "section Section1;\r\nshared inputDatasetForAggregation = let AdfDoc = AzureStorage.BlobContents(\"https://practiceaccountstorage.blob.core.windows.net/inputorsourcecontainer/employee1/employee_datahr.csv\"),Csv = Csv.Document(AdfDoc, [Delimiter = \",\", Encoding = TextEncoding.Utf8, QuoteStyle = QuoteStyle.Csv]), PromotedHeaders = Table.PromoteHeaders(Csv, [PromoteAllScalars = true]) in  PromotedHeaders;\r\nshared UserQuery = let Source = #\"inputDatasetForAggregation\" in Source;\r\n",
+			"documentLocale": "en-us"
+		}
+	}
+}

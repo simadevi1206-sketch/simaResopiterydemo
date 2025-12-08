@@ -1,0 +1,34 @@
+{
+	"name": "Execute pipeline",
+	"properties": {
+		"activities": [
+			{
+				"name": "Execute Pipeline",
+				"type": "ExecutePipeline",
+				"dependsOn": [],
+				"policy": {
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "copy_csv_pipeline or script AC for pe run details",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true
+				}
+			}
+		],
+		"parameters": {
+			"SIMAD": {
+				"type": "string"
+			},
+			"JSON": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"lastPublishTime": "2025-11-23T16:44:37Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

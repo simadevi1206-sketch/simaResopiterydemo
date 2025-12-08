@@ -1,0 +1,47 @@
+{
+	"name": "Web Activity",
+	"properties": {
+		"activities": [
+			{
+				"name": "web",
+				"type": "WebActivity",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"method": "POST",
+					"headers": {
+						"Content-Type": "application/json"
+					},
+					"linkedServices": [
+						{
+							"referenceName": "linkedservice1storagesima",
+							"type": "LinkedServiceReference"
+						}
+					],
+					"datasets": [
+						{
+							"referenceName": "web",
+							"type": "DatasetReference"
+						}
+					],
+					"url": "https://dummy.restapiexample.com/api/v1/create",
+					"body": {
+						"name": "test",
+						"salary": "123",
+						"age": "23"
+					}
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2025-11-22T05:31:03Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,64 @@
+{
+	"name": "ParameterDataflow",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "inputDatasetForAggregation",
+						"type": "DatasetReference"
+					},
+					"name": "employee"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Sinksource",
+						"type": "DatasetReference"
+					},
+					"name": "Sink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "filter"
+				}
+			],
+			"scriptLines": [
+				"parameters{",
+				"     deptName as string",
+				"}",
+				"source(output(",
+				"          Name as string,",
+				"          DepartmentID as integer,",
+				"          DateOfJoining as date,",
+				"          employeeID as integer,",
+				"          Salary as integer,",
+				"          DepartmentName as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     partitionBy('hash', 1)) ~> employee",
+				"employee filter(DepartmentName==$deptName,",
+				"     partitionBy('hash', 1)) ~> filter",
+				"filter sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     partitionFileNames:['ParameterDataFlow.csv'],",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     mapColumn(",
+				"          Name,",
+				"          DepartmentID,",
+				"          DateOfJoining,",
+				"          employeeID,",
+				"          Salary,",
+				"          DepartmentName",
+				"     ),",
+				"     partitionBy('hash', 1)) ~> Sink"
+			]
+		}
+	}
+}

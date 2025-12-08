@@ -1,0 +1,40 @@
+{
+	"name": "source",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage1",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": "employee_data.json",
+				"folderPath": "employeedirectory",
+				"container": "inputorsourcecontainer"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"EmployeeID": {
+					"type": "integer"
+				},
+				"EmployeeName": {
+					"type": "string"
+				},
+				"Department": {
+					"type": "string"
+				},
+				"Salary": {
+					"type": "integer"
+				},
+				"DateOfJoining": {
+					"type": "string"
+				}
+			}
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

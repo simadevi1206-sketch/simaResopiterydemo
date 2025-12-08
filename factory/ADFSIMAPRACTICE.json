@@ -1,0 +1,9 @@
+{
+	"name": "ADFSIMAPRACTICE",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "fe6073e4-c877-4860-9836-f765b0a3f88e",
+		"tenantId": "7fc9e277-5a34-4a88-b1b4-84e8269224a3"
+	}
+}
